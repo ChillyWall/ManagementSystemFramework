@@ -1,14 +1,12 @@
 #ifndef PMS_FIELDS_HPP
 #define PMS_FIELDS_HPP
 
-#include <cstdint>
 #include <fmt/base.h>
 #include <fmt/format.h>
-#include <stdexcept>
-#include <string>
+#include <pms/DateTime.hpp>
+#include <pms/types.hpp>
 
-using std::string;
-using Integer = std::int64_t;
+namespace pms {
 
 template <typename T>
 class BasicField {
@@ -23,18 +21,15 @@ public:
      * @tparam V the type of value
      * @param val the value
      */
-    template <typename... V>
-    explicit BasicField(V&&... args) : value_(std::forward<V>(args)...) {}
+    explicit BasicField(const T& val) : value_(val) {}
+    explicit BasicField(T&& val) : value_(std::move(val)) {}
 
     BasicField(const BasicField& rhs) = default;
-    BasicField(BasicField&& rhs) noexcept : value_(std::move(rhs.value_)) {}
+    BasicField(BasicField&& rhs) noexcept = default;
     ~BasicField() noexcept = default;
 
     BasicField& operator=(const BasicField& rhs) = default;
-    BasicField& operator=(BasicField&& rhs) noexcept {
-        value_ = std::move(rhs.value_);
-        return *this;
-    }
+    BasicField& operator=(BasicField&& rhs) noexcept = default;
 
     /**
      * @brief get the value
@@ -52,142 +47,103 @@ public:
         return const_cast<T&>(static_cast<const BasicField*>(this)->value());
     }
 
-    /**
-     * @brief convert the value to string
-     * @return the value string
-     */
-    virtual string str() const {
-        return fmt::to_string(value_);
+    virtual string str() const = 0;
+};
+
+class IntegerField : public BasicField<Integer> {
+public:
+    IntegerField() = default;
+    IntegerField(const IntegerField& rhs) = default;
+    IntegerField(IntegerField&& rhs) noexcept = default;
+
+    using BasicField<Integer>::BasicField;
+
+    ~IntegerField() noexcept = default;
+
+    IntegerField& operator=(const IntegerField& rhs) = default;
+    IntegerField& operator=(IntegerField&& rhs) noexcept = default;
+
+    string str() const override {
+        return fmt::to_string(BasicField<Integer>::value());
     }
 };
 
-using TextText = BasicField<string>;
-using IntegerField = BasicField<Integer>;
-using BooleanField = BasicField<bool>;
+class BooleanField : public BasicField<bool> {
+public:
+    using BasicField<bool>::BasicField;
 
-struct Date {
-    Integer year;
-    Integer month;
-    Integer day;
+    BooleanField() = default;
+    BooleanField(const BooleanField& rhs) = default;
+    BooleanField(BooleanField&& rhs) noexcept = default;
 
-    /**
-     * @brief the default constructor, set the date to 0-01-01
-     */
-    Date() : year(0), month(1), day(1) {}
+    ~BooleanField() noexcept = default;
 
-    /**
-     * @brief construct a date with year, month, this constructor will
-     * also check the validity of the date
-     * @param y the year
-     * @param m the month
-     * @param d the day
-     */
-    Date(Integer y, Integer m, Integer d) : year(y) {
-        if (m <= 12 && m >= 1) {
-            month = m;
-        } else {
-            throw std::invalid_argument("invalid month");
-        }
+    BooleanField& operator=(const BooleanField& rhs) = default;
+    BooleanField& operator=(BooleanField&& rhs) noexcept = default;
 
-        if (d <= 31 && d >= 1) {
-            day = d;
-        } else {
-            throw std::invalid_argument("invalid day");
-        }
-
-        if (d == 31 && (m == 2 || m == 4 || m == 6 || m == 9 || m == 11)) {
-            throw std::invalid_argument("invalid date");
-        }
-
-        if (d == 29 && m == 2 &&
-            (y % 4 != 0 || (y % 100 == 0 && y % 400 != 0))) {
-            throw std::invalid_argument("invalid date");
-        }
+    string str() const override {
+        return fmt::to_string(BasicField<bool>::value());
     }
 };
 
-struct Time {
-    Integer hour;
-    Integer minute;
-    Integer second;
+class FloatField : public BasicField<double> {
+public:
+    using BasicField<double>::BasicField;
 
-    Time() : hour(0), minute(0), second(0) {}
-    /**
-     * @brief construct a time field with hour, minute, and second, this
-     * constructor will also check the validity of the time
-     * @param h the hour
-     * @param m the minute
-     * @param s the second
-     */
-    Time(Integer h, Integer m, Integer s) {
-        if (h < 24 && h >= 0) {
-            hour = h;
-        } else {
-            throw std::invalid_argument("invalid hour");
-        }
+    FloatField() = default;
+    FloatField(const FloatField& rhs) = default;
+    FloatField(FloatField&& rhs) noexcept = default;
+    ~FloatField() noexcept = default;
 
-        if (m < 60 && m >= 0) {
-            minute = m;
-        } else {
-            throw std::invalid_argument("invalid minute");
-        }
+    FloatField& operator=(const FloatField& rhs) = default;
+    FloatField& operator=(FloatField&& rhs) noexcept = default;
 
-        if (s < 60 && s >= 0) {
-            second = s;
-        } else {
-            throw std::invalid_argument("invalid second");
-        }
+    string str() const override {
+        return fmt::to_string(BasicField<double>::value());
     }
 };
 
-struct DateTime : public Date, public Time {
-    DateTime(Integer y, Integer mon, Integer d, Integer h, Integer min,
-             Integer sec)
-        : Date(y, mon, d), Time(h, min, sec) {}
+class TextField : public BasicField<string> {
+public:
+    using BasicField<string>::BasicField;
+
+    TextField() = default;
+    TextField(const TextField& rhs) = default;
+    TextField(TextField&& rhs) noexcept = default;
+    ~TextField() noexcept = default;
+
+    TextField& operator=(const TextField& rhs) = default;
+    TextField& operator=(TextField&& rhs) noexcept = default;
+
+    string str() const override {
+        return BasicField<string>::value();
+    }
 };
 
 /**
  * @class DateField
  * @brief the field for date
  */
-class DateField : BasicField<Date> {
+class DateField : public BasicField<Date> {
 public:
     using BasicField<Date>::BasicField;
 
     DateField(const DateField& rhs) = default;
-
-    /**
-     * @brief get the year
-     * @return the year
-     */
-    Integer year() const {
-        return BasicField<Date>::value().year;
-    }
-
-    /**
-     * @brief get the month
-     * @return the month
-     */
-    Integer month() const {
-        return BasicField<Date>::value().month;
-    }
-
-    /**
-     * @brief get the day
-     * @return the day
-     */
-    Integer day() const {
-        return BasicField<Date>::value().day;
-    }
+    DateField(DateField&& rhs) noexcept = default;
+    DateField& operator=(const DateField& rhs) = default;
+    DateField& operator=(DateField&& rhs) noexcept = default;
+    ~DateField() noexcept = default;
 
     /**
      * @brief get the date in specific format
-     * @param fmt_str the format string, uses {0}, {1}, {2} to represent year,
-     * month, and day
+     * @param fmt_str the format string, uses {0}, {1}, {2} to represent
+     * year, month, and day
      * @return the date string
      */
     string str(const string& fmt_str) const {
-        return fmt::format(fmt_str, year(), month(), day());
+        return fmt::format(fmt_str, BasicField<Date>::value().year,
+                           BasicField<Date>::value().month,
+                           BasicField<Date>::value().day);
     }
 
     /**
@@ -195,7 +151,7 @@ public:
      * @return the date string
      */
     string str() const override {
-        return str("{}-{}-{}");
+        return str("{:04}-{:02}-{:02}");
     }
 };
 
@@ -203,42 +159,28 @@ public:
  * @class TimeField
  * @brief the field for time
  */
-class TimeField : BasicField<Time> {
+class TimeField : public BasicField<Time> {
 public:
     using BasicField<Time>::BasicField;
 
-    /**
-     * @brief get the hour
-     * @return the hour
-     */
-    Integer hour() const {
-        return BasicField<Time>::value().hour;
-    }
+    TimeField() = default;
+    TimeField(const TimeField& rhs) = default;
+    TimeField(TimeField&& rhs) noexcept = default;
+    ~TimeField() noexcept = default;
 
-    /**
-     * @brief get the minute
-     * @return the minute
-     */
-    Integer minute() const {
-        return BasicField<Time>::value().minute;
-    }
-
-    /**
-     * @brief get the second
-     * @return the second
-     */
-    Integer second() const {
-        return BasicField<Time>::value().second;
-    }
+    TimeField& operator=(const TimeField& rhs) = default;
+    TimeField& operator=(TimeField&& rhs) noexcept = default;
 
     /**
      * @brief get the time in specific format
-     * @param fmt_str the format string, uses {0}, {1}, {2} to represent hour,
-     * minute, and second
+     * @param fmt_str the format string, uses {0}, {1}, {2} to represent
+     * hour, minute, and second
      * @return the time string
      */
     string str(const string& fmt_str) const {
-        return fmt::format(fmt_str, hour(), minute(), second());
+        return fmt::format(fmt_str, BasicField<Time>::value().hour,
+                           BasicField<Time>::value().minute,
+                           BasicField<Time>::value().second);
     }
 
     /**
@@ -258,63 +200,27 @@ class DateTimeField : public BasicField<DateTime> {
 public:
     using BasicField<DateTime>::BasicField;
 
-    /**
-     * @brief get the year
-     * @return the year
-     */
-    Integer year() const {
-        return BasicField<DateTime>::value().year;
-    }
+    DateTimeField() = default;
+    DateTimeField(const DateTimeField& rhs) = default;
+    DateTimeField(DateTimeField&& rhs) noexcept = default;
+    ~DateTimeField() noexcept = default;
 
-    /**
-     * @brief get the month
-     * @return the month
-     */
-    Integer month() const {
-        return BasicField<DateTime>::value().month;
-    }
-
-    /**
-     * @brief get the day
-     * @return the day
-     */
-    Integer day() const {
-        return BasicField<DateTime>::value().day;
-    }
-
-    /**
-     * @brief get the hour
-     * @return the hour
-     */
-    Integer hour() const {
-        return BasicField<DateTime>::value().hour;
-    }
-
-    /**
-     * @brief get the minute
-     * @return the minute
-     */
-    Integer minute() const {
-        return BasicField<DateTime>::value().minute;
-    }
-
-    /**
-     * @brief get the second
-     * @return the second
-     */
-    Integer second() const {
-        return BasicField<DateTime>::value().second;
-    }
+    DateTimeField& operator=(const DateTimeField& rhs) = default;
+    DateTimeField& operator=(DateTimeField&& rhs) noexcept = default;
 
     /**
      * @brief get the date time in specific format
-     * @param fmt_str the format string, uses {0}, {1}, {2}, {3}, {4}, {5} to
-     * represent year, month, day, hour, minute, and second
+     * @param fmt_str the format string, uses {0}, {1}, {2}, {3}, {4}, {5}
+     * to represent year, month, day, hour, minute, and second
      * @return the date time string
      */
     string str(string fmt_str) const {
-        return fmt::format(fmt_str, year(), month(), day(), hour(), minute(),
-                           second());
+        return fmt::format(fmt_str, BasicField<DateTime>::value().year,
+                           BasicField<DateTime>::value().month,
+                           BasicField<DateTime>::value().day,
+                           BasicField<DateTime>::value().hour,
+                           BasicField<DateTime>::value().minute,
+                           BasicField<DateTime>::value().second);
     }
 
     /**
@@ -325,5 +231,5 @@ public:
         return str("{:04}-{:02}-{:02} {:02}:{:02}:{:02}");
     }
 };
-
+} // namespace pms
 #endif
