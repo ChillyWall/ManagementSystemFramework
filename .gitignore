@@ -1,2 +1,4 @@
 build/
 devel/
+compile_commands.json
+.cache/
