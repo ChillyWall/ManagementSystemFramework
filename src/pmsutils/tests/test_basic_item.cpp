@@ -40,6 +40,13 @@ TEST(TestItemStr, TestBasicItem) {
     ASSERT_EQ(prisoner.get_field_str<2>(), string("2024-09-01"));
     ASSERT_EQ(prisoner.get_field_str<3>(), string("2024303424"));
     ASSERT_EQ(prisoner.get_field_str<4>(), string("4"));
+
+    array<string, 5> str_arr(prisoner.get_fields_str());
+    ASSERT_EQ(str_arr.at(0), string("郭金锋"));
+    ASSERT_EQ(str_arr.at(1), string("true"));
+    ASSERT_EQ(str_arr.at(2), string("2024-09-01"));
+    ASSERT_EQ(str_arr.at(3), string("2024303424"));
+    ASSERT_EQ(str_arr.at(4), string("4"));
 }
 
 int main() {

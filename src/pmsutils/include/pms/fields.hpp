@@ -8,6 +8,11 @@
 
 namespace pms {
 
+/**
+ * @class BasicField
+ * @brief the base class for fields
+ * @tparam T the type of the data
+ */
 template <typename T>
 class BasicField {
 private:
@@ -16,11 +21,6 @@ private:
 public:
     BasicField() {}
 
-    /**
-     * @brief the constructor with perfect forwarding to send args to value
-     * @tparam V the type of value
-     * @param val the value
-     */
     explicit BasicField(const T& val) : value_(val) {}
     explicit BasicField(T&& val) : value_(std::move(val)) {}
 
@@ -47,9 +47,17 @@ public:
         return const_cast<T&>(static_cast<const BasicField*>(this)->value());
     }
 
+    /**
+     * @brief get the string representation of the field's data
+     * @return the string
+     */
     virtual string str() const = 0;
 };
 
+/**
+ * @class IntegerField
+ * @brief the field for interger, represented by "Integer"
+ */
 class IntegerField : public BasicField<Integer> {
 public:
     IntegerField() = default;
@@ -68,6 +76,10 @@ public:
     }
 };
 
+/**
+ * @class BooleanField
+ * @brief the field for boolean, represented by "Boolean"
+ */
 class BooleanField : public BasicField<bool> {
 public:
     using BasicField<bool>::BasicField;
@@ -86,6 +98,10 @@ public:
     }
 };
 
+/**
+ * @class FloatField
+ * @brief the field for floating number, represented by "Float"
+ */
 class FloatField : public BasicField<double> {
 public:
     using BasicField<double>::BasicField;
@@ -103,6 +119,10 @@ public:
     }
 };
 
+/**
+ * @class TextField
+ * @brief the field for text, represented by "Text"
+ */
 class TextField : public BasicField<string> {
 public:
     using BasicField<string>::BasicField;
@@ -122,7 +142,7 @@ public:
 
 /**
  * @class DateField
- * @brief the field for date
+ * @brief the field for date, represented by "Date"
  */
 class DateField : public BasicField<Date> {
 public:
@@ -157,7 +177,7 @@ public:
 
 /**
  * @class TimeField
- * @brief the field for time
+ * @brief the field for time, represented by "Time"
  */
 class TimeField : public BasicField<Time> {
 public:
@@ -194,7 +214,7 @@ public:
 
 /**
  * @class DateTimeField
- * @brief the field for date and time
+ * @brief the field for date and time, represented by "DateTime"
  */
 class DateTimeField : public BasicField<DateTime> {
 public:

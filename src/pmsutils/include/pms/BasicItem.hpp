@@ -10,8 +10,9 @@
 namespace pms {
 
 /**
- * @brief the base class for information item
- *
+ * @brief the base class for information item, the derived classes must provide
+ * two static member variables of array<string, field_count> type, containing
+ * the fields' names and types.
  * @tparam V the types of the fields
  * @param field_values the count of the fields
  */
@@ -33,7 +34,7 @@ private:
      * fields
      */
     template <size_t idx = 0>
-    typename std::enable_if<idx == field_count, void>::type
+    typename std::enable_if<(idx == field_count), void>::type
     iterate_fields(str_array& field_strs) const {}
 
     /**
@@ -43,7 +44,7 @@ private:
     template <size_t idx = 0>
     typename std::enable_if<(idx < field_count), void>::type
     iterate_fields(str_array& field_strs) const {
-        field_strs.at(idx) = get_field_value<idx>();
+        field_strs.at(idx) = get_field_str<idx>();
         iterate_fields<idx + 1>(field_strs);
     }
 
@@ -92,15 +93,16 @@ public:
      * @brief get the string of the fields
      * @return the string of the field
      */
-    template <size_t N>
+    template <size_t N, typename... Var>
     typename std::enable_if<(N < field_count), string>::type
-    get_field_str() const {
-        return std::get<N>(fields_).str();
+    get_field_str(Var... args) const {
+        return std::get<N>(fields_).str(args...);
     }
 
     str_array get_fields_str() const {
         str_array res;
         iterate_fields(res);
+        return res;
     }
 };
 } // namespace pms
