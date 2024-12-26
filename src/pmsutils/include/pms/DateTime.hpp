@@ -51,6 +51,47 @@ struct Date {
             throw std::invalid_argument("invalid date");
         }
     }
+
+    friend bool operator<(const Date& lhs, const Date& rhs) {
+        if (lhs.year < rhs.year) {
+            return true;
+        } else if (lhs.year == rhs.year) {
+            if (lhs.month < rhs.month) {
+                return true;
+            } else if (lhs.month == rhs.month) {
+                if (lhs.day < rhs.day) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    friend bool operator==(const Date& lhs, const Date& rhs) {
+        return lhs.year == rhs.year && lhs.month == rhs.month &&
+            lhs.day == rhs.day;
+    }
+
+    friend bool operator!=(const Date& lhs, const Date& rhs) {
+        return !(lhs == rhs);
+    }
+
+    friend bool operator>(const Date& lhs, const Date& rhs) {
+        return !(lhs < rhs) && lhs != rhs;
+    }
+
+    friend bool operator<=(const Date& lhs, const Date& rhs) {
+        return lhs < rhs || lhs == rhs;
+    }
+
+    friend bool operator>=(const Date& lhs, const Date& rhs) {
+        return lhs > rhs || lhs == rhs;
+    }
 };
 
 struct Time {
@@ -92,6 +133,47 @@ struct Time {
             throw std::invalid_argument("invalid second");
         }
     }
+
+    friend bool operator<(const Time& lhs, const Time& rhs) {
+        if (lhs.hour < rhs.hour) {
+            return true;
+        } else if (lhs.hour == rhs.hour) {
+            if (lhs.minute < rhs.minute) {
+                return true;
+            } else if (lhs.minute == rhs.minute) {
+                if (lhs.second < rhs.second) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    friend bool operator==(const Time& lhs, const Time& rhs) {
+        return lhs.hour == rhs.hour && lhs.minute == rhs.minute &&
+            lhs.second == rhs.second;
+    }
+
+    friend bool operator!=(const Time& lhs, const Time& rhs) {
+        return !(lhs == rhs);
+    }
+
+    friend bool operator>(const Time& lhs, const Time& rhs) {
+        return !(lhs < rhs) && lhs != rhs;
+    }
+
+    friend bool operator<=(const Time& lhs, const Time& rhs) {
+        return lhs < rhs || lhs == rhs;
+    }
+
+    friend bool operator>=(const Time& lhs, const Time& rhs) {
+        return lhs > rhs || lhs == rhs;
+    }
 };
 
 struct DateTime : public Date, public Time {
@@ -107,6 +189,40 @@ struct DateTime : public Date, public Time {
 
     DateTime& operator=(const DateTime& rhs) = default;
     DateTime& operator=(DateTime&& rhs) noexcept = default;
+
+    friend bool operator<(const DateTime& lhs, const DateTime& rhs) {
+        if (Date(lhs) < Date(rhs)) {
+            return true;
+        } else if (Date(lhs) == Date(rhs)) {
+            if (Time(lhs) < Time(rhs)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    friend bool operator==(const DateTime& lhs, const DateTime& rhs) {
+        return Date(lhs) == Date(rhs) && Time(lhs) == Time(rhs);
+    }
+
+    friend bool operator!=(const DateTime& lhs, const DateTime& rhs) {
+        return !(lhs == rhs);
+    }
+
+    friend bool operator>(const DateTime& lhs, const DateTime& rhs) {
+        return !(lhs < rhs) && lhs != rhs;
+    }
+
+    friend bool operator<=(const DateTime& lhs, const DateTime& rhs) {
+        return lhs < rhs || lhs == rhs;
+    }
+
+    friend bool operator>=(const DateTime& lhs, const DateTime& rhs) {
+        return lhs > rhs || lhs == rhs;
+    }
 };
 } // namespace pms
 #endif

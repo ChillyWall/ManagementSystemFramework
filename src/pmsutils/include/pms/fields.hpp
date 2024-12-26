@@ -5,6 +5,8 @@
 #include <fmt/format.h>
 #include <pms/DateTime.hpp>
 #include <pms/types.hpp>
+#include <sstream>
+#include <stdexcept>
 
 namespace pms {
 
@@ -64,11 +66,20 @@ public:
  */
 class IntegerField : public BasicField<Integer> {
 public:
+    using BasicField<Integer>::BasicField;
+
     IntegerField() = default;
     IntegerField(const IntegerField& rhs) = default;
     IntegerField(IntegerField&& rhs) noexcept = default;
 
-    using BasicField<Integer>::BasicField;
+    IntegerField(const string& str) {
+        std::istringstream iss(str);
+        iss >> BasicField<Integer>::value();
+        if (iss.fail()) {
+            throw std::invalid_argument(
+                fmt::format("Unable to convert {} to integer", str));
+        }
+    }
 
     ~IntegerField() noexcept = default;
 
@@ -96,6 +107,19 @@ public:
     BooleanField(const BooleanField& rhs) = default;
     BooleanField(BooleanField&& rhs) noexcept = default;
 
+    BooleanField(const string& str) {
+        bool res;
+        if (str == "true") {
+            res = true;
+        } else if (str == "false") {
+            res = false;
+        } else {
+            throw std::invalid_argument(
+                fmt::format("Unable to convert {} to boolean", str));
+        }
+        BasicField<bool>::value() = res;
+    }
+
     ~BooleanField() noexcept = default;
 
     BooleanField& operator=(const BooleanField& rhs) = default;
@@ -121,13 +145,23 @@ public:
     FloatField() = default;
     FloatField(const FloatField& rhs) = default;
     FloatField(FloatField&& rhs) noexcept = default;
+
+    FloatField(const string& str) {
+        std::istringstream iss(str);
+        iss >> BasicField<double>::value();
+        if (iss.fail()) {
+            throw std::invalid_argument(
+                fmt::format("Unable to convert {} to double", str));
+        }
+    }
+
     ~FloatField() noexcept = default;
 
     FloatField& operator=(const FloatField& rhs) = default;
     FloatField& operator=(FloatField&& rhs) noexcept = default;
 
     string str() const override {
-        return fmt::to_string(BasicField<double>::value());
+        return fmt::to_string(value());
     }
 
     static constexpr c_string type() {
@@ -170,6 +204,18 @@ public:
 
     DateField(const DateField& rhs) = default;
     DateField(DateField&& rhs) noexcept = default;
+
+    DateField(const string& str) {
+        std::istringstream iss(str);
+        char delimeter;
+        iss >> value().year >> delimeter >> value().month >> delimeter >>
+            value().day;
+        if (iss.fail()) {
+            throw std::invalid_argument(
+                fmt::format("Unable to convert {} to Date", str));
+        }
+    }
+
     DateField& operator=(const DateField& rhs) = default;
     DateField& operator=(DateField&& rhs) noexcept = default;
     ~DateField() noexcept = default;
@@ -200,6 +246,18 @@ public:
     TimeField() = default;
     TimeField(const TimeField& rhs) = default;
     TimeField(TimeField&& rhs) noexcept = default;
+
+    TimeField(const string& str) {
+        std::istringstream iss(str);
+        char delimeter;
+        iss >> value().hour >> delimeter >> value().minute >> delimeter >>
+            value().second;
+        if (iss.fail()) {
+            throw std::invalid_argument(
+                fmt::format("Unable to convert {} to Time", str));
+        }
+    }
+
     ~TimeField() noexcept = default;
 
     TimeField& operator=(const TimeField& rhs) = default;
@@ -231,6 +289,19 @@ public:
     DateTimeField() = default;
     DateTimeField(const DateTimeField& rhs) = default;
     DateTimeField(DateTimeField&& rhs) noexcept = default;
+
+    DateTimeField(const string& str) {
+        std::istringstream iss(str);
+        char delimeter;
+        iss >> value().year >> delimeter >> value().month >> delimeter >>
+            value().day >> delimeter >> value().hour >> delimeter >>
+            value().minute >> delimeter >> value().second;
+        if (iss.fail()) {
+            throw std::invalid_argument(
+                fmt::format("Unable to convert {} to DateTime", str));
+        }
+    }
+
     ~DateTimeField() noexcept = default;
 
     DateTimeField& operator=(const DateTimeField& rhs) = default;
