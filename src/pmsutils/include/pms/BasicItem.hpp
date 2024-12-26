@@ -50,7 +50,8 @@ private:
 
 public:
     BasicItem() = default;
-    BasicItem(V... args) : fields_(args...) {}
+    template <typename... Var>
+    BasicItem(Var&&... args) : fields_(std::forward<Var>(args)...) {}
     BasicItem(const BasicItem& rhs) = default;
     BasicItem(BasicItem&& rhs) noexcept = default;
 
@@ -63,7 +64,7 @@ public:
      * @brief get the count of fields
      * @return the count of fields
      */
-    size_t get_field_count() const {
+    static constexpr size_t get_field_count() {
         return field_count;
     }
 
@@ -93,13 +94,17 @@ public:
      * @brief get the string of the fields
      * @return the string of the field
      */
-    template <size_t N, typename... Var>
+    template <size_t N>
     typename std::enable_if<(N < field_count), string>::type
-    get_field_str(Var... args) const {
-        return std::get<N>(fields_).str(args...);
+    get_field_str() const {
+        return std::get<N>(fields_).str();
     }
 
-    str_array get_fields_str() const {
+    /**
+     * @brief get the fields' value in string format
+     * @return an array of strings containing the fields' values
+     */
+    str_array get_str_fields() const {
         str_array res;
         iterate_fields(res);
         return res;

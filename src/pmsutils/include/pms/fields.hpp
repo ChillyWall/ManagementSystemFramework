@@ -52,6 +52,10 @@ public:
      * @return the string
      */
     virtual string str() const = 0;
+
+    static constexpr c_string type() {
+        return "Basic";
+    }
 };
 
 /**
@@ -73,6 +77,10 @@ public:
 
     string str() const override {
         return fmt::to_string(BasicField<Integer>::value());
+    }
+
+    static constexpr c_string type() {
+        return "Integer";
     }
 };
 
@@ -96,6 +104,10 @@ public:
     string str() const override {
         return fmt::to_string(BasicField<bool>::value());
     }
+
+    static constexpr c_string type() {
+        return "Boolean";
+    }
 };
 
 /**
@@ -116,6 +128,10 @@ public:
 
     string str() const override {
         return fmt::to_string(BasicField<double>::value());
+    }
+
+    static constexpr c_string type() {
+        return "Float";
     }
 };
 
@@ -138,6 +154,10 @@ public:
     string str() const override {
         return BasicField<string>::value();
     }
+
+    static constexpr c_string type() {
+        return "Text";
+    }
 };
 
 /**
@@ -155,23 +175,17 @@ public:
     ~DateField() noexcept = default;
 
     /**
-     * @brief get the date in specific format
-     * @param fmt_str the format string, uses {0}, {1}, {2} to represent
-     * year, month, and day
+     * @brief get the date in "yy-mm-dd" format
      * @return the date string
      */
-    string str(const string& fmt_str) const {
-        return fmt::format(fmt_str, BasicField<Date>::value().year,
+    string str() const {
+        return fmt::format("{:04}-{:02}-{:02}", BasicField<Date>::value().year,
                            BasicField<Date>::value().month,
                            BasicField<Date>::value().day);
     }
 
-    /**
-     * @brief get the date in string type, formatted as "yy-mm-dd"
-     * @return the date string
-     */
-    string str() const override {
-        return str("{:04}-{:02}-{:02}");
+    static constexpr c_string type() {
+        return "Date";
     }
 };
 
@@ -192,23 +206,17 @@ public:
     TimeField& operator=(TimeField&& rhs) noexcept = default;
 
     /**
-     * @brief get the time in specific format
-     * @param fmt_str the format string, uses {0}, {1}, {2} to represent
-     * hour, minute, and second
+     * @brief get the time in "hour:minute:second" format
      * @return the time string
      */
-    string str(const string& fmt_str) const {
-        return fmt::format(fmt_str, BasicField<Time>::value().hour,
+    string str() const {
+        return fmt::format("{:02}:{:02}:{:02}", BasicField<Time>::value().hour,
                            BasicField<Time>::value().minute,
                            BasicField<Time>::value().second);
     }
 
-    /**
-     * @brief get the date in string type, formatted as "h:m:s"
-     * @return the time string
-     */
-    string str() const override {
-        return str("{:02}:{:02}:{:02}");
+    static constexpr c_string type() {
+        return "Time";
     }
 };
 
@@ -229,13 +237,12 @@ public:
     DateTimeField& operator=(DateTimeField&& rhs) noexcept = default;
 
     /**
-     * @brief get the date time in specific format
-     * @param fmt_str the format string, uses {0}, {1}, {2}, {3}, {4}, {5}
-     * to represent year, month, day, hour, minute, and second
+     * @brief get the date time in "yy-mm-dd hr:min:sec" format
      * @return the date time string
      */
-    string str(string fmt_str) const {
-        return fmt::format(fmt_str, BasicField<DateTime>::value().year,
+    string str() const {
+        return fmt::format("{:04}-{:02}-{:02} {:02}:{:02}:{:02}",
+                           BasicField<DateTime>::value().year,
                            BasicField<DateTime>::value().month,
                            BasicField<DateTime>::value().day,
                            BasicField<DateTime>::value().hour,
@@ -243,12 +250,8 @@ public:
                            BasicField<DateTime>::value().second);
     }
 
-    /**
-     * @brief convert the field to string, in format "y-m-d h:m:s"
-     * @return the date time string
-     */
-    string str() const override {
-        return str("{:04}-{:02}-{:02} {:02}:{:02}:{:02}");
+    static constexpr c_string type() {
+        return "DateTime";
     }
 };
 } // namespace pms

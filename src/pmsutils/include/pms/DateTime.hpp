@@ -2,6 +2,7 @@
 #define PMS_DATETIME_HPP
 
 #include <pms/types.hpp>
+#include <stdexcept>
 
 namespace pms {
 
