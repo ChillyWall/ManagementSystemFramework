@@ -10,11 +10,11 @@ using std::array;
 using std::string;
 
 /**
- * @class Prisoner
+ * @class Student
  * @brief an example of item class
  */
-class Prisoner : public BasicItem<5, TextField, BooleanField, DateField,
-                                  TextField, IntegerField> {
+class Student : public BasicItem<5, TextField, BooleanField, DateField,
+                                 TextField, IntegerField> {
 private:
     // a type alias for the base class
     using Base = BasicItem<5, TextField, BooleanField, DateField, TextField,
@@ -26,9 +26,9 @@ private:
 
 public:
     using Base::BasicItem;
-    Prisoner() = default;
-    Prisoner(const Prisoner& rhs) = default;
-    Prisoner(Prisoner&& rhs) noexcept = default;
+    Student() = default;
+    Student(const Student& rhs) = default;
+    Student(Student&& rhs) noexcept = default;
 
     /**
      * @brief REQUIRED, to get the names of fields
@@ -43,14 +43,14 @@ public:
      * @return a c-style string containing the type of the item
      */
     static constexpr const char* type() {
-        return "Prisoner";
+        return "Student";
     }
 };
 
 TEST(TestItemValue, TestBasicItem) {
     DateField df(Date(2024, 9, 1));
-    Prisoner prisoner(TextField("郭金锋"), BooleanField(true), df,
-                      TextField("2024303424"), IntegerField(4));
+    Student prisoner(TextField("郭金锋"), BooleanField(true), df,
+                     TextField("2024303424"), IntegerField(4));
     ASSERT_EQ(prisoner.get_field_count(), 5);
     ASSERT_EQ(prisoner.get_field_value<0>(), string("郭金锋"));
     ASSERT_EQ(prisoner.get_field_value<1>(), true);
@@ -63,9 +63,9 @@ TEST(TestItemValue, TestBasicItem) {
 }
 
 TEST(TestItemStr, TestBasicItem) {
-    Prisoner prisoner(TextField("郭金锋"), BooleanField(true),
-                      DateField(Date(2024, 9, 1)), TextField("2024303424"),
-                      IntegerField(4));
+    Student prisoner(TextField("郭金锋"), BooleanField(true),
+                     DateField(Date(2024, 9, 1)), TextField("2024303424"),
+                     IntegerField(4));
     ASSERT_EQ(prisoner.get_field_str<0>(), string("郭金锋"));
     ASSERT_EQ(prisoner.get_field_str<1>(), string("true"));
     ASSERT_EQ(prisoner.get_field_str<2>(), string("2024-09-01"));
