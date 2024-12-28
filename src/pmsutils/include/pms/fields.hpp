@@ -225,7 +225,7 @@ public:
      * @return the date string
      */
     string str() const {
-        return fmt::format("{:04}-{:02}-{:02}", BasicField<Date>::value().year,
+        return fmt::format("{}-{:02}-{:02}", BasicField<Date>::value().year,
                            BasicField<Date>::value().month,
                            BasicField<Date>::value().day);
     }
@@ -312,7 +312,7 @@ public:
      * @return the date time string
      */
     string str() const {
-        return fmt::format("{:04}-{:02}-{:02} {:02}:{:02}:{:02}",
+        return fmt::format("{}-{:02}-{:02} {:02}:{:02}:{:02}",
                            BasicField<DateTime>::value().year,
                            BasicField<DateTime>::value().month,
                            BasicField<DateTime>::value().day,

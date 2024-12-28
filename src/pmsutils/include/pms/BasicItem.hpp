@@ -34,7 +34,7 @@ private:
      * @param field_strs the string array to receive the string values of the
      */
     template <size_t idx = 0>
-    typename std::enable_if<(idx == field_count), void>::type
+    typename std::enable_if_t<(idx == field_count), void>
     iterate_field_str(str_array& field_strs) const {}
 
     /**
@@ -42,7 +42,7 @@ private:
      * @param field_values the string array to receive the string values of the
      */
     template <size_t idx = 0>
-    typename std::enable_if<(idx < field_count), void>::type
+    typename std::enable_if_t<(idx < field_count), void>
     iterate_field_str(str_array& field_strs) const {
         field_strs.at(idx) = get_field_str<idx>();
         iterate_field_str<idx + 1>(field_strs);
@@ -53,7 +53,7 @@ private:
      * @param field_strs the string array to receive the string values of the
      */
     template <size_t idx = 0>
-    typename std::enable_if<(idx == field_count), void>::type
+    typename std::enable_if_t<(idx == field_count), void>
     iterate_field_type(cstr_array& field_strs) const {}
 
     /**
@@ -61,7 +61,7 @@ private:
      * @param field_values the string array to receive the string values of the
      */
     template <size_t idx = 0>
-    typename std::enable_if<(idx < field_count), void>::type
+    typename std::enable_if_t<(idx < field_count), void>
     iterate_field_type(cstr_array& field_strs) const {
         field_strs.at(idx) = get_field_type<idx>();
         iterate_field_type<idx + 1>(field_strs);
@@ -137,6 +137,10 @@ public:
         return std::get<idx>(fields_).type();
     }
 
+    /**
+     * @brief get the types of the fields
+     * @return the c-style string array containing the types of the fields
+     */
     constexpr cstr_array get_field_types() const {
         cstr_array res;
         iterate_field_type(res);
