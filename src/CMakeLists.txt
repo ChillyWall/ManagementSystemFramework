@@ -1,1 +1,1 @@
-add_subdirectory(pmsutils)
+add_subdirectory(msfutils)

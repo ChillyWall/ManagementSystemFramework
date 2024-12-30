@@ -1,10 +1,10 @@
 #ifndef PMS_DATETIME_HPP
 #define PMS_DATETIME_HPP
 
-#include <pms/types.hpp>
+#include <msf/types.hpp>
 #include <stdexcept>
 
-namespace pms {
+namespace msf {
 
 struct Date {
     Integer year;
@@ -224,5 +224,5 @@ struct DateTime : public Date, public Time {
         return lhs > rhs || lhs == rhs;
     }
 };
-} // namespace pms
+} // namespace msf
 #endif

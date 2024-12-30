@@ -2,12 +2,12 @@
 #define PMS_BASICITEM_HPP
 
 #include <array>
-#include <pms/fields.hpp>
-#include <pms/types.hpp>
+#include <msf/fields.hpp>
+#include <msf/types.hpp>
 #include <tuple>
 #include <type_traits>
 
-namespace pms {
+namespace msf {
 
 /**
  * @brief the base class for information item, the derived classes must provide
@@ -147,5 +147,5 @@ public:
         return std::move(res);
     }
 };
-} // namespace pms
+} // namespace msf
 #endif

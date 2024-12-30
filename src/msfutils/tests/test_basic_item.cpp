@@ -1,11 +1,11 @@
 #include <array>
 #include <gtest/gtest.h>
-#include <pms/BasicItem.hpp>
-#include <pms/fields.hpp>
-#include <pms/types.hpp>
+#include <msf/BasicItem.hpp>
+#include <msf/fields.hpp>
+#include <msf/types.hpp>
 #include <string>
 
-using namespace pms;
+using namespace msf;
 using std::array;
 using std::string;
 

@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <string>
 
-namespace pms {
+namespace msf {
 using std::string;
 using Integer = std::int64_t;
 using std::size_t;
@@ -12,6 +12,6 @@ using std::size_t;
 // the c-style string type
 using c_string = const char*;
 
-} // namespace pms
+} // namespace msf
 
 #endif
